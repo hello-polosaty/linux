@@ -13,10 +13,10 @@ MOUNTPOINT="/backups"
 USERNAME="username"
 PASSWORD="password"
 
-### Backup Folder
+## Backup Folder
 BACKUP_FOLDER=/$MOUNTPOINT/system
 
-## DB_Settings
+## DB Settings
 BACKUP_DB_PATH=/$MOUNTPOINT/db
 USER="postgres"
 PGPASSWORD="password"
@@ -34,7 +34,6 @@ NOW=$(date +%Y%m%d%M)
 mount -t cifs $SHARENAME $MOUNTPOINT -o username=$USERNAME,password=$PASSWORD 2> /dev/null
 
 ## If the network folder is mounted, it creates a backup, if no - a letter is sent with the error
-
 if grep -qP "\s+$MOUNTPOINT+\s" /proc/mounts; then
 
 ## Archiving directories and copying them to the backup server
@@ -47,17 +46,16 @@ $TAR -czf "$DST/jira_data.tgz" -P /var/atlassian/
 pg_dump -U $USER -d $DB_NAME | gzip > $BACKUP_DB_PATH/$DB_NAME-$DATE
 unset PGPASSWORD
 
-### clear ###
+## Delete old files
 find /$MOUNTPOINT/system/ -maxdepth 1 -mindepth 1 -type d -mtime +30 -exec rm -r {} \;
 find /$MOUNTPOINT/db/ -maxdepth 1 -mindepth 1 -type f -mtime +90 -exec rm -r {} \;
 
-# Unmount backup folder
+## Unmount backup folder
 umount $MOUNTPOINT
 
 else
 
 ## Send alert message
-
 echo "Server: $NAME\nProblem: mounting a network drive\nip:$IP " | mail -s "Server backup problem" monitoring@email.com
 
   exit
