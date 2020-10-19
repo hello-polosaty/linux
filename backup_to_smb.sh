@@ -6,7 +6,6 @@ NAME=$(hostname -A)
 ## ipv4 address
 IP=$(ip a | grep -e "inet\s172.*")
 
-
 ## Mount credentials
 SHARENAME="//backup_folder/scripts/jira"
 MOUNTPOINT="/backups"
